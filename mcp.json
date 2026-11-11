@@ -6,7 +6,10 @@
       "url": "https://physicalvalidation.com/mcp",
       "extensions": {
         "com.openai": {
-          "auth": { "type": "mixed" }
+          "auth": {
+            "type": "mixed",
+            "client": { "mode": "cimd" }
+          }
         }
       }
     }
