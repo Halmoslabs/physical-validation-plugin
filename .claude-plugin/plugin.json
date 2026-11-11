@@ -9,6 +9,7 @@
     "url": "https://physicalvalidation.com"
   },
   "homepage": "https://physicalvalidation.com",
+  "repository": "https://github.com/Halmoslabs/physical-validation-plugin",
   "privacyPolicyUrl": "https://physicalvalidation.com/privacy",
   "license": "MIT",
   "keywords": ["cro", "cdmo", "research", "experiments", "sourcing"]
