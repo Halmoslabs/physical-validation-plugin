@@ -1,5 +1,5 @@
 {
-  "name": "physical-validation",
+  "name": "physicalvalidation",
   "displayName": "Physical Validation",
   "version": "1.1.0",
   "description": "Find CROs and CDMOs, compare published evidence, and prepare or submit experiment requests.",
@@ -12,5 +12,11 @@
   "repository": "https://github.com/Halmoslabs/physical-validation-plugin",
   "privacyPolicyUrl": "https://physicalvalidation.com/privacy",
   "license": "MIT",
-  "keywords": ["cro", "cdmo", "research", "experiments", "sourcing"]
+  "keywords": [
+    "cro",
+    "cdmo",
+    "research",
+    "experiments",
+    "sourcing"
+  ]
 }

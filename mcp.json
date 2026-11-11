@@ -1,14 +1,16 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
   "mcpServers": {
-    "physical-validation": {
+    "physicalvalidation": {
       "type": "streamable-http",
       "url": "https://physicalvalidation.com/mcp",
       "extensions": {
         "com.openai": {
           "auth": {
             "type": "mixed",
-            "client": { "mode": "cimd" }
+            "client": {
+              "mode": "cimd"
+            }
           }
         }
       }
