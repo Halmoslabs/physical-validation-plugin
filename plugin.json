@@ -64,9 +64,9 @@
             },
             {
               "description": "Prepare a peptide request for review",
-              "prompt": "Prepare a peptide synthesis request from the supplied reviewer specifications and return a review link. Keep it as preparation.",
+              "prompt": "Prepare a peptide synthesis request for ACDEFGHIK with an acetylated N terminus, amidated C terminus, at least 98% RP-HPLC purity, and at least 10 mg gross-dry material split into two 5 mg aliquots. Include HPLC and mass-spectrometry QC. Return a review link; do not submit it.",
               "tools_triggered": "prepare_request",
-              "expected_behavior": "Use the publisher-supplied non-sensitive scientific fixture, preserve its fields, and return the review link. Explain that preparation has neither persisted an account draft nor submitted a request."
+              "expected_behavior": "Preserve the specified sequence, terminal modifications, purity, quantity basis, aliquots, and QC. Return a review link and identify any remaining required fields. Explain that preparation has neither persisted an account draft nor submitted a request."
             },
             {
               "description": "Review and delete a disposable account draft",
@@ -75,10 +75,10 @@
               "expected_behavior": "Complete host-managed OAuth with the reviewer account. Match the publisher-provided disposable fixture and delete it using its current revision. If the account or designated fixture is unavailable, report the missing setup and perform no deletion."
             },
             {
-              "description": "Submit the isolated reviewer request",
-              "prompt": "Read the designated submission draft in the supplied reviewer account. Using the complete approved fixture, submit it in the publisher’s isolated review environment. I agree to its contents, terms, and privacy notice.",
+              "description": "Submit the designated reviewer request",
+              "prompt": "Read the designated submission draft in the supplied QA reviewer account. Once the publisher confirms that this account’s test requests suppress notifications, submit the complete approved fixture. I agree to its contents, terms, and privacy notice.",
               "tools_triggered": "get_request_draft, submit_request",
-              "expected_behavior": "Require the publisher-provided reviewer account, approved fixture, and isolated submission environment before executing. Submit the current draft revision with consent and a stable idempotency key. Return its receipt. Reuse the same key for an unchanged retry. If setup is missing, report it and perform no submission."
+              "expected_behavior": "Require the publisher-provided QA reviewer account, approved fixture, and verified notification suppression before executing. Submit the current draft revision with consent and a stable idempotency key. Return the real persisted request receipt and preserve its reviewer-test status. Reuse the same key for an unchanged retry. If setup is missing, report it and perform no submission."
             }
           ],
           "negative": [
