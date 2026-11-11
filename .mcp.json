@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "physical-validation": {
+      "type": "http",
+      "url": "https://physicalvalidation.com/mcp"
+    }
+  }
+}

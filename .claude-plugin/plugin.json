@@ -1,0 +1,15 @@
+{
+  "name": "physical-validation",
+  "displayName": "Physical Validation",
+  "version": "1.1.0",
+  "description": "Find CROs and CDMOs, compare published evidence, and prepare or submit experiment requests.",
+  "author": {
+    "name": "Halmos Labs",
+    "email": "inquiry@physicalvalidation.com",
+    "url": "https://physicalvalidation.com"
+  },
+  "homepage": "https://physicalvalidation.com",
+  "privacyPolicyUrl": "https://physicalvalidation.com/privacy",
+  "license": "MIT",
+  "keywords": ["cro", "cdmo", "research", "experiments", "sourcing"]
+}
