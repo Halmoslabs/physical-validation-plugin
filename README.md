@@ -1,6 +1,6 @@
 # Physical Validation
 
-Version 1.1.0 is a release candidate. Host-managed OAuth and the authenticated account workflows must be deployed and verified before this version is published to either directory. The instructions below describe the intended release behavior. Public catalogue tools are already available at the service endpoint.
+Version 1.1.0 is prepared for directory review. The remote service and host-managed OAuth are live. The directory listings are not yet published.
 
 Find CROs, CDMOs, and research facilities, compare their published evidence, and prepare experiment requests with Physical Validation by Halmos Labs. The shared skills cover provider discovery, request preparation and submission, and existing account drafts.
 
