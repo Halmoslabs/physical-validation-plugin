@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const endpoint = 'https://physicalvalidation.com/mcp';
 const userAgent = 'physical-validation-plugin-contract-check/1.0';
-const nonTools = new Set(['account_token', 'draft_id', 'idempotency_key', 'input_schema', 'next_cursor', 'request_id', 'tool_name']);
+const nonTools = new Set(['account_token', 'company_matches', 'draft_id', 'idempotency_key', 'input_schema', 'next_cursor', 'request_id', 'tool_name']);
 const snake = '[a-z][a-z0-9]*(?:_[a-z0-9]+)+';
 
 export async function readRpc(response, id) {
