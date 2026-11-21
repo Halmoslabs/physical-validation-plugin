@@ -4,7 +4,9 @@ Version 1.1.0 is prepared for directory review. The remote service and host-mana
 
 Find CROs, CDMOs, and research facilities, compare their published evidence, and prepare experiment requests with Physical Validation by Halmos Labs. The shared skills cover provider discovery, request preparation and submission, and existing account drafts.
 
-Requests support peptides, rabbits, mice, genes and plasmids, proteins and antibodies, sequencing, and other research work. Each request selects one service family. A request can include inline specifications, provider preferences, contact information, budget currency, and the other fields supported by the connected tools. Attach files through the browser request page.
+Requests support peptides, rabbits, mice, genes and plasmids, proteins and antibodies, sequencing, and other research work. Each request selects one service family. A request can include inline specifications, provider preferences, contact information, budget currency, and the other fields supported by the connected tools. Attach files using `request_upload` with host-managed OAuth and an HTTP client that can read and upload the person's files. If the tools or file/HTTP access are unavailable, use the browser request page instead.
+
+For files, call `request_upload` with `action:"prepare"` and every file's `name`, media `type`, and byte `size`. For each zero-based file `index`, call `action:"url"` with the returned `session`, HTTP PUT the actual bytes to the returned private URL using its required headers, then call `action:"complete"`. Require `complete:true` for every declared file before including `upload:{session}` in an authorized `submit_request`. Uploading alone submits nothing; names alone do not upload files. See the [file upload workflow](skills/prepare-experiment-request/SKILL.md#file-uploads) for empty-file and failed-upload handling.
 
 The plugin connects to https://physicalvalidation.com/mcp. Catalogue search and evidence reads are public. Account drafts and submissions require the host's managed OAuth connection. Use the host's sign-in prompt for those actions. Request preparation returns a review link. Submission requires the person's agreement and returns a receipt when accepted. Halmos reviews requests before supplier outreach.
 
@@ -16,7 +18,7 @@ This source contains both platform formats. Claude reads `.claude-plugin/plugin.
 - Prepare a peptide synthesis request using my specifications for review.
 - Show my saved request drafts and open the one about sequencing.
 
-Capabilities depend on the tools the connected service exposes. Provider records report published claims and unknowns. Existing draft tools support listing, reading, deletion, and submission. Use the returned browser links for saved edits and file uploads.
+Capabilities depend on the tools the connected service exposes. Provider records report published claims and unknowns. Existing draft tools support listing, reading, deletion, and submission. Use the returned browser links for saved edits; file uploads can use the tool workflow above or the browser fallback.
 
 ## Data and support
 
