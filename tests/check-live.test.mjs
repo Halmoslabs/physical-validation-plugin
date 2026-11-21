@@ -1,8 +1,20 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { readFile } from 'node:fs/promises';
 import { checkReferences, extractUrls, readRpc } from '../scripts/check-live.mjs';
 
 const tools = [{ name: 'request_upload', inputSchema: { properties: { action: { enum: ['prepare', 'url', 'complete'] } } } }, { name: 'submit_request', inputSchema: {} }];
+
+test('manifest longDescription checks every named upload action', async () => {
+  const manifest = JSON.parse(await readFile(new URL('../plugin.json', import.meta.url), 'utf8'));
+  const text = manifest.extensions['com.openai'].interface.longDescription;
+  const path = '/extensions/com.openai/interface/longDescription';
+  assert.deepEqual(checkReferences('plugin.json', [{ text, path }], tools).errors, []);
+  for (const action of ['prepare', 'url', 'complete']) {
+    const changed = text.replace(`action:"${action}"`, 'action:"vanish"');
+    assert.match(checkReferences('plugin.json', [{ text: changed, path }], tools).errors[0], /plugin.json\/extensions\/com.openai\/interface\/longDescription: tool "request_upload" has unsupported action "vanish"/);
+  }
+});
 
 test('references cover backticks, bare prose, call forms and manifest tool declarations without field names', () => {
   const result = checkReferences('README.md', [{ text: '`request_upload` with action:"prepare", then action:"url". Call submit_request. `next_cursor` and `idempotency_key` are fields. request_upload {action:"complete"}' }], tools);
