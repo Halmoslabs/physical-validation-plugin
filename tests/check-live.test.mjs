@@ -34,6 +34,15 @@ test('missing tools and actions report their file and owner', () => {
   assert.match(checkReferences('README.md', [{ text: 'action:"x"' }], tools).errors[0], /no preceding tool/);
 });
 
+test('every manifest-declared tool is checked, even without underscores or in the field exclusion list', () => {
+  const path = '/extensions/com.openai/review/test_cases/positive/0/tools_triggered';
+  assert.deepEqual(checkReferences('plugin.json', [{ text: 'request_upload, submit_request', path }], tools).errors, []);
+  for (const name of ['getcompany', 'fake-tool', 'next_cursor']) assert.match(checkReferences('plugin.json', [{ text: name, path }], tools).errors[0], new RegExp(`missing MCP tool "${name}"`));
+  assert.match(checkReferences('plugin.json', [{ text: 'getcompany', path: `${path}/0` }], tools).errors[0], /missing MCP tool "getcompany"/);
+  assert.deepEqual(checkReferences('plugin.json', [{ text: 'echo', path }], [{ name: 'echo' }]).errors, []);
+  assert.match(checkReferences('plugin.json', [{ text: '', path }], tools).errors[0], /empty MCP tool declaration/);
+});
+
 test('site URLs exclude punctuation, other origins and JSON escapes', () => {
   assert.deepEqual([...extractUrls([{ text: '(https://physicalvalidation.com/docs/mcp). https://physicalvalidation.com/privacy, https://physicalvalidation.com "https://physicalvalidation.com/terms" https://physicalvalidation.com.evil.test/no' }])], [
     'https://physicalvalidation.com/docs/mcp', 'https://physicalvalidation.com/privacy', 'https://physicalvalidation.com', 'https://physicalvalidation.com/terms',

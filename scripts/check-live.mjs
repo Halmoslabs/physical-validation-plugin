@@ -93,7 +93,15 @@ export function checkReferences(file, sections, tools) {
     for (const match of text.matchAll(new RegExp('`(' + snake + ')(?=`|\\s*\\{)', 'g'))) add(match[1], match.index);
     for (const match of text.matchAll(new RegExp('\\b(' + snake + ')\\s*\\{', 'g'))) add(match[1], match.index);
     for (const match of text.matchAll(/\b((?:search|get|list|prepare|submit|delete|request|save|update|create|read|find)_[a-z0-9_]+)\b/g)) add(match[1], match.index);
-    if (path.endsWith('/tools_triggered')) for (const match of text.matchAll(new RegExp('\\b(' + snake + ')\\b', 'g'))) add(match[1], match.index);
+    if (/\/tools_triggered(?:\/\d+)?$/.test(path)) {
+      let offset = 0;
+      for (const entry of text.split(',')) {
+        const name = entry.trim();
+        if (name) found.set(offset + entry.indexOf(name), name);
+        else errors.push(`${file}${path}: empty MCP tool declaration`);
+        offset += entry.length + 1;
+      }
+    }
     const events = [...found].map(([index, name]) => ({ index, tool: name }));
     for (const match of text.matchAll(/\baction["']?\s*:\s*["']([^"']+)["']/g)) events.push({ index: match.index, action: match[1] });
     let current;
