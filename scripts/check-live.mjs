@@ -84,6 +84,33 @@ function strings(value, path = '') {
   return Object.entries(value).flatMap(([key, child]) => strings(child, `${path}/${key}`));
 }
 
+function actionTool(text, index, names) {
+  const before = text.slice(0, index);
+  let owner;
+  for (const match of before.matchAll(new RegExp('\\b(' + snake + ')`?\\s*\\{', 'g'))) {
+    if (!names.has(match[1])) continue;
+    let depth = 0, quote, escaped = false;
+    for (const char of before.slice(match.index + match[0].indexOf('{'))) {
+      if (quote) {
+        if (escaped) escaped = false;
+        else if (char === '\\') escaped = true;
+        else if (char === quote) quote = undefined;
+      } else if (char === '"' || char === "'") quote = char;
+      else if (char === '{') depth++;
+      else if (char === '}' && --depth === 0) break;
+    }
+    if (depth > 0) owner = match[1];
+  }
+  if (owner) return owner;
+  const expression = before.split(/[.!?](?=\s)|\n\s*\n/).at(-1);
+  const calls = [];
+  for (const match of expression.matchAll(new RegExp('\\b(?:call|invoke|use|using)\\s+`?(' + snake + ')`?', 'gi'))) if (names.has(match[1])) calls.push({ index: match.index, name: match[1] });
+  for (const match of expression.matchAll(new RegExp('`?(' + snake + ')`?\\s+with\\b', 'g'))) {
+    if (names.has(match[1]) && !/\b(?:for|to|from|in|of|before|after)\s*$/.test(expression.slice(0, match.index))) calls.push({ index: match.index, name: match[1] });
+  }
+  return calls.sort((a, b) => b.index - a.index)[0]?.name;
+}
+
 export function checkReferences(file, sections, tools) {
   const catalogue = new Map(tools.map(tool => [tool.name, tool]));
   const errors = [], references = new Set();
@@ -102,20 +129,17 @@ export function checkReferences(file, sections, tools) {
         offset += entry.length + 1;
       }
     }
-    const events = [...found].map(([index, name]) => ({ index, tool: name }));
-    for (const match of text.matchAll(/\baction["']?\s*:\s*["']([^"']+)["']/g)) events.push({ index: match.index, action: match[1] });
-    let current;
-    for (const event of events.sort((a, b) => a.index - b.index)) {
-      const label = `${file}${path}`;
-      if (event.tool) {
-        current = event.tool;
-        references.add(current);
-        if (!catalogue.has(current)) errors.push(`${label}: missing MCP tool "${current}"`);
-      } else {
-        const actions = catalogue.get(current)?.inputSchema?.properties?.action?.enum;
-        if (!current) errors.push(`${label}: action "${event.action}" has no preceding tool reference`);
-        else if (catalogue.has(current) && (!actions || !actions.includes(event.action))) errors.push(`${label}: tool "${current}" has unsupported action "${event.action}" (allowed: ${actions?.join(', ') || 'none'})`);
-      }
+    const label = `${file}${path}`;
+    for (const name of found.values()) {
+      references.add(name);
+      if (!catalogue.has(name)) errors.push(`${label}: missing MCP tool "${name}"`);
+    }
+    const names = new Set([...catalogue.keys(), ...found.values()]);
+    for (const match of text.matchAll(/\baction["']?\s*:\s*["']([^"']+)["']/g)) {
+      const current = actionTool(text, match.index, names);
+      const actions = catalogue.get(current)?.inputSchema?.properties?.action?.enum;
+      if (!current) errors.push(`${label}: action "${match[1]}" has no preceding tool call in the same expression`);
+      else if (catalogue.has(current) && (!actions || !actions.includes(match[1]))) errors.push(`${label}: tool "${current}" has unsupported action "${match[1]}" (allowed: ${actions?.join(', ') || 'none'})`);
     }
   }
   return { errors: [...new Set(errors)], references };

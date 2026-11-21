@@ -43,6 +43,17 @@ test('every manifest-declared tool is checked, even without underscores or in th
   assert.match(checkReferences('plugin.json', [{ text: '', path }], tools).errors[0], /empty MCP tool declaration/);
 });
 
+test('actions belong to calls, not incidental tool mentions or unrelated sentences', () => {
+  for (const text of [
+    'Call `request_upload` for `submit_request` with `action:"complete"`.',
+    'request_upload {note:"submit_request", nested:{value:"}"}, action:"complete"}',
+    'Call `request_upload` for `submit_request` with `action:"complete"`, then call `request_upload` with `action:"url"`.',
+  ]) assert.deepEqual(checkReferences('README.md', [{ text }], tools).errors, []);
+  assert.match(checkReferences('README.md', [{ text: 'Call `request_upload` for `submit_request` with `action:"vanish"`.' }], tools).errors[0], /tool "request_upload" has unsupported action "vanish"/);
+  assert.match(checkReferences('README.md', [{ text: 'Mention `request_upload`. Later use action:"complete".' }], tools).errors[0], /no preceding tool call in the same expression/);
+  assert.match(checkReferences('README.md', [{ text: 'request_upload {action:"prepare"}. submit_request {action:"complete"}' }], tools).errors[0], /tool "submit_request" has unsupported action "complete"/);
+});
+
 test('site URLs exclude punctuation, other origins and JSON escapes', () => {
   assert.deepEqual([...extractUrls([{ text: '(https://physicalvalidation.com/docs/mcp). https://physicalvalidation.com/privacy, https://physicalvalidation.com "https://physicalvalidation.com/terms" https://physicalvalidation.com.evil.test/no' }])], [
     'https://physicalvalidation.com/docs/mcp', 'https://physicalvalidation.com/privacy', 'https://physicalvalidation.com', 'https://physicalvalidation.com/terms',
