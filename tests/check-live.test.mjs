@@ -48,6 +48,7 @@ test('actions belong to calls, not incidental tool mentions or unrelated sentenc
     'Call `request_upload` for `submit_request` with `action:"complete"`.',
     'request_upload {note:"submit_request", nested:{value:"}"}, action:"complete"}',
     'Call `request_upload` for `submit_request` with `action:"complete"`, then call `request_upload` with `action:"url"`.',
+    'Call `request_upload` with an action, e.g. `action:"prepare"`, i.e. `action:"url"`.',
   ]) assert.deepEqual(checkReferences('README.md', [{ text }], tools).errors, []);
   assert.match(checkReferences('README.md', [{ text: 'Call `request_upload` for `submit_request` with `action:"vanish"`.' }], tools).errors[0], /tool "request_upload" has unsupported action "vanish"/);
   assert.match(checkReferences('README.md', [{ text: 'Mention `request_upload`. Later use action:"complete".' }], tools).errors[0], /no preceding tool call in the same expression/);

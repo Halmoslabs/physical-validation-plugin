@@ -102,7 +102,7 @@ function actionTool(text, index, names) {
     if (depth > 0) owner = match[1];
   }
   if (owner) return owner;
-  const expression = before.split(/[.!?](?=\s)|\n\s*\n/).at(-1);
+  const expression = before.split(/(?<!\b(?:e\.g|i\.e|etc|vs|cf))[.!?](?=\s)|\n\s*\n/).at(-1);
   const calls = [];
   for (const match of expression.matchAll(new RegExp('\\b(?:call|invoke|use|using)\\s+`?(' + snake + ')`?', 'gi'))) if (names.has(match[1])) calls.push({ index: match.index, name: match[1] });
   for (const match of expression.matchAll(new RegExp('`?(' + snake + ')`?\\s+with\\b', 'g'))) {
