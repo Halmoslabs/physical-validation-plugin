@@ -11,4 +11,6 @@ Use the host's managed OAuth connection for the person's Physical Validation acc
 - Delete only the draft the person explicitly asked to remove, using its current revision with `delete_request_draft`. A revision conflict means the draft changed. Read it again and verify that the deletion still matches the person's intent before retrying.
 - Submit a saved draft only after the person agrees to its complete contents and the service terms and privacy notice. Use `submit_request` with the draft ID and current revision, preserving the idempotency key for an unchanged retry. Report the returned submission receipt and any `draftDeleted` result accurately.
 
+To file a **new** brief instead of submitting a saved draft, use OAuth `submit_request` with `{text, consent:true}` after the person agrees, or use the [HTTP brief flow](../prepare-experiment-request/SKILL.md#brief-filing-over-http): POST the brief, email and consent, then PUT the emailed code on the reserved request ID with the private intake secret. Retry the same filing operation to recover its receipt. Do not use brief filing to replace a saved draft: it neither submits nor deletes that draft.
+
 The draft tools do not provide live request progress. Use the service's returned links when the person needs information beyond the exposed tools.

@@ -8,7 +8,11 @@ Requests support peptides, rabbits, mice, genes and plasmids, proteins and antib
 
 For files, call `request_upload` with `action:"prepare"` and every file's `name`, media `type`, and byte `size`. For each zero-based file `index`, call `request_upload` with `action:"url"` and the returned `session`, HTTP PUT the actual bytes to the returned private URL using its required headers, then call `request_upload` with `action:"complete"`. Require `complete:true` for every declared file before including `upload:{session}` in an authorized `submit_request`. Uploading alone submits nothing; names alone do not upload files. See the [file upload workflow](skills/prepare-experiment-request/SKILL.md#file-uploads) for empty-file and failed-upload handling.
 
-The plugin connects to https://physicalvalidation.com/mcp. Catalogue search and evidence reads are public. Account drafts and submissions require the host's managed OAuth connection. Use the host's sign-in prompt for those actions. Request preparation returns a review link. Submission requires the person's agreement and returns a receipt when accepted. Halmos reviews requests before supplier outreach.
+The plugin connects to https://physicalvalidation.com/mcp. Catalogue search and evidence reads are public. Use the host's managed OAuth connection for account drafts and MCP submissions. With the person's explicit agreement, file a new brief with `submit_request` using `{text, consent:true}`; OAuth supplies the verified email. Contact details, structured needs, pricing and provider preferences are optional. An unchanged retry returns the same receipt; reuse any explicit idempotency key. Briefs cannot carry file uploads; use a structured submission for files.
+
+Without MCP, an HTTP client can start the same brief with `POST /api/v1/requests` using `{text, email, consent:true}` and any supported optional fields. The `202` response reserves a `req_…` ID and returns a private intake secret while the service emails a code. Send `PUT /api/v1/requests/{id}/verification` with `{code}` and `Authorization: Bearer <intakeSecret>`. Retry that same PUT to recover the receipt. Do not share the code or secret or treat the initial response as a submission. Use these flows only when the connected service exposes them; otherwise offer the browser request page.
+
+Request preparation returns a review link, not a submission. Report submission only after receiving a receipt. Halmos reviews requests before supplier outreach.
 
 ## Install and use
 
